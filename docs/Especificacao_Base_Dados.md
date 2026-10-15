@@ -1,7 +1,7 @@
 # OnePilates – Especificação de Base de Dados
 
 **Grupo 8 - InfiniteLoop**  
-**Versão 1.6 (gold de quatro grupos) – 15/10/2026**
+**Versão 1.7 (snapshot 20261015) – 15/10/2026**
 
 ## Especificação de Base de Dados
 
@@ -13,7 +13,7 @@
 | **Integrantes** | Andrei Scafi de Vasconcelos, Guilherme Queiroz de Lima, Gustavo Castro Andrade, Harison Rios de Miranda, Isabella de Sousa Viana, Pedro da Costa Ferreira Gandin |
 | **Projeto** | OnePilates |
 | **Base especificada** | AACT / ClinicalTrials.gov, camada gold de pilates, fisioterapia, mobilidade e força, com resumos PubMed |
-| **Versão do documento** | 1.6 |
+| **Versão do documento** | 1.7 |
 | **Data** | 15/10/2026 |
 | **Onde está gravada** | DuckDB `data/clinical_trials.duckdb` (schemas `raw`, `silver`, `gold`) e cópia MySQL `estudos_aula` |
 
@@ -34,7 +34,7 @@ A versão 1.5 descrevia outro ouro: CSV `trials_pilates`, n = 652, promovido por
 | **Formato recebido** | Arquivos texto delimitados por pipe em `base_dados/` |
 | **Recorte da gold** | Ensaio com `overall_status = COMPLETED` cujo nome ou descrição de alguma intervenção contém termo de pilates, fisioterapia, mobilidade ou força. Título, resumo, MeSH e critérios de elegibilidade não decidem a entrada. |
 
-Contagens da gold nesta carga: 12.158 estudos. Pilates 309, fisioterapia 3.848, mobilidade 5.811, força 5.994. A soma passa de 12.158 porque um estudo pode cair em mais de um grupo. Raw e silver permanecem com os 602.514 ensaios do dump.
+Contagens da gold nesta carga, snapshot `20261015_export_ctgov.zip`: 12.405 estudos. Pilates 317, fisioterapia 3.933, mobilidade 5.939, força 6.139. A soma passa de 12.405 porque um estudo pode cair em mais de um grupo. Raw e silver permanecem com os 606.957 ensaios do dump.
 
 ### 0.2 Por que esta base
 
@@ -48,7 +48,7 @@ O grão é o ensaio registrado, não o aluno e não a aula. A base não prescrev
 - Só entram estudos registrados no ClinicalTrials.gov. PEDro, SciELO e LILACS sem NCT ficam de fora. O cruzamento PEDro da versão 1.5 não faz parte deste pipeline.
 - O índice de busca usado pela IA está em inglês (título, condição, MeSH e nome da intervenção). Prompt em português precisa ser reduzido a termos clínicos em inglês antes da procedure.
 - `were_results_reported` diz se o resultado foi postado no registro. Não é o mesmo que existir artigo. O artigo fica em `gold.referencias`.
-- 1.105 referências com `busca_status = ok` não têm texto de resumo. 2.606 citações não têm PMID. 52 PMIDs não foram encontrados.
+- 1.131 referências com `busca_status = ok` não têm texto de resumo. 2.638 citações não têm PMID. 53 citações (50 PMIDs) não foram encontradas.
 - Não substitui revisão sistemática nem avaliação do aluno.
 
 ---
@@ -64,7 +64,7 @@ O grão é o ensaio registrado, não o aluno e não a aula. A base não prescrev
 | **Cabeçalho** | Primeira linha | V |
 | **Datas na origem** | Texto; na silver e na gold, `DATE` quando o parse ISO funciona | V |
 | **Decimal** | Ponto | V |
-| **Volumetria desta carga** | Raw e silver: 602.514 estudos. Gold: 12.158 estudos e 33.623 referências. MySQL repete esses recortes de consulta. | V |
+| **Volumetria desta carga** | Raw e silver: 606.957 estudos. Gold: 12.405 estudos e 34.257 referências. MySQL repete esses recortes de consulta. | V |
 | **Banco analítico** | DuckDB local | D |
 | **Banco da aplicação** | MySQL 8, schema aplicado por `sql/schema_mysql.sql`, charset `utf8mb4` | D |
 | **Atualização** | Carga cheia pelos scripts em `pipeline/`. O site AACT atualiza com mais frequência do que este snapshot. | D |
@@ -106,7 +106,7 @@ No MySQL as listas viram `estudo_grupo`, `estudo_condicao`, `estudo_intervencao`
 | 5. Texto a comparar | `conditions.name_normalized` | texto dentro da lista | Não | Minúsculas, sem ponto final, espaços repetidos reduzidos | parkinson disease |
 | 6. Cruzamento | `nct_id` e `pmid` | VARCHAR | `nct_id` sim; `pmid` não | Liga o ensaio à citação PubMed | 33612123 |
 | 7. Grupo do ensaio | `termos_encontrados` | VARCHAR[] | Sim | `pilates`, `fisioterapia`, `mobilidade`, `forca`. Pelo menos um | ['fisioterapia'] |
-| 8. Fase | `phase` | VARCHAR | Não | `NA`, PHASE1–4, EARLY_PHASE1 ou combinação com `/`. Nulo em 839 (6,9%). `NA` preenchido é sentinela de "não se aplica", não nulo | NA |
+| 8. Fase | `phase` | VARCHAR | Não | `NA`, PHASE1–4, EARLY_PHASE1 ou combinação com `/`. Nulo em 858 (6,9%). `NA` preenchido é sentinela de "não se aplica", não nulo | NA |
 
 ### 2.2 Decisão de discretização
 
@@ -128,10 +128,10 @@ No MySQL as listas viram `estudo_grupo`, `estudo_condicao`, `estudo_intervencao`
 | **Base cruzada** | PubMed, pelo PMID que já vem em `study_references.txt` |
 | **Tipo** | Exato: `nct_id` do ensaio com a citação, e `pmid` com o artigo |
 | **O que é gravado** | `gold.referencias`: `pmid`, `reference_type`, `citation`, `titulo`, `periodico`, `ano`, `resumo`, `busca_status` |
-| **Status da busca** | `ok` 30.965, `sem_pmid` 2.606, `nao_encontrado` 52 |
+| **Status da busca** | `ok` 31.566, `sem_pmid` 2.638, `nao_encontrado` 53 |
 | **Fora desta fase** | PEDro, fuzzy por título, texto completo do artigo |
 
-`reference_type` nesta carga: `BACKGROUND` 23.922, `DERIVED` 5.203, `RESULT` 4.498. A ficha da IA prefere `RESULT` com resumo.
+`reference_type` nesta carga: `BACKGROUND` 24.401, `DERIVED` 5.267, `RESULT` 4.589. A ficha da IA prefere `RESULT` com resumo.
 
 ### 2.4 Canonicalização
 
@@ -147,7 +147,7 @@ Não há mapa DeCS gravado nesta carga. O nome original continua em `conditions.
 
 ### 2.5 Dicionário — `gold.estudos`
 
-n = 12.158. Nulos contados nesta carga. Lista vazia (`[]`) não é nulo.
+n = 12.405. Nulos contados nesta carga. Lista vazia (`[]`) não é nulo.
 
 | Nome | Tipo | Regra | Aceita nulo | Qtd | % |
 |---|---|---|---|---:|---:|
@@ -155,30 +155,30 @@ n = 12.158. Nulos contados nesta carga. Lista vazia (`[]`) não é nulo.
 | brief_title | VARCHAR | Título curto | Não | 0 | 0,0 |
 | official_title | VARCHAR | Título do protocolo | Sim | 98 | 0,8 |
 | brief_summary | VARCHAR | Resumo do registro, não o abstract | Não | 0 | 0,0 |
-| study_type | VARCHAR | INTERVENTIONAL 11.321; OBSERVATIONAL 837 | Não | 0 | 0,0 |
-| phase | VARCHAR | Texto único da fase. `NA` é valor | Sim | 839 | 6,9 |
-| phases | VARCHAR[] | Fase partida em `/`, ordem fixa | Lista vazia quando `phase` é nulo | 839 vazias | 6,9 |
+| study_type | VARCHAR | INTERVENTIONAL 11.549; OBSERVATIONAL 856 | Não | 0 | 0,0 |
+| phase | VARCHAR | Texto único da fase. `NA` é valor | Sim | 858 | 6,9 |
+| phases | VARCHAR[] | Fase partida em `/`, ordem fixa | Lista vazia quando `phase` é nulo | 858 vazias | 6,9 |
 | overall_status | VARCHAR | Sempre COMPLETED | Não | 0 | 0,0 |
 | start_date | DATE | Início | Sim | 8 | 0,1 |
 | completion_date | DATE | Conclusão | Sim | 58 | 0,5 |
 | primary_completion_date | DATE | Conclusão do desfecho primário | Sim | 56 | 0,5 |
 | enrollment | BIGINT | Participantes | Sim | 17 | 0,1 |
-| minimum_age_years | DOUBLE | Idade mínima em anos | Sim | 436 | 3,6 |
-| maximum_age_years | DOUBLE | Idade máxima em anos. Nulo costuma ser ausência de teto | Sim | 3.785 | 31,1 |
-| gender | VARCHAR | ALL 10.140; FEMALE 1.410; MALE 602 | Sim | 6 | 0,0 |
+| minimum_age_years | DOUBLE | Idade mínima em anos | Sim | 441 | 3,6 |
+| maximum_age_years | DOUBLE | Idade máxima em anos. Nulo costuma ser ausência de teto | Sim | 3.864 | 31,1 |
+| gender | VARCHAR | ALL 10.337; FEMALE 1.444; MALE 618 | Sim | 6 | 0,0 |
 | conditions | lista de struct | `name`, `name_normalized` | Lista vazia não ocorre nesta carga | 0 | 0,0 |
 | interventions | lista de struct | `intervention_type`, `name`, `description`. É o texto do filtro | Lista vazia não ocorre | 0 | 0,0 |
-| mesh_terms | lista de struct | `mesh_term`, `mesh_type`, `mesh_term_normalized` | Lista pode ser vazia | 2.421 vazias | 19,9 |
-| countries_current | lista de struct | `name`, `removed`. País removido já ficou de fora | Lista pode ser vazia | 536 vazias | 4,4 |
+| mesh_terms | lista de struct | `mesh_term`, `mesh_type`, `mesh_term_normalized` | Lista pode ser vazia | 2.497 vazias | 20,1 |
+| countries_current | lista de struct | `name`, `removed`. País removido já ficou de fora | Lista pode ser vazia | 537 vazias | 4,3 |
 | lead_sponsors | lista de struct | `agency_class`, `lead_or_collaborator` = LEAD, `name` | Lista vazia não ocorre | 0 | 0,0 |
-| were_results_reported | BOOLEAN | true 1.110; false 11.048 | Não | 0 | 0,0 |
+| were_results_reported | BOOLEAN | true 1.124; false 11.281 | Não | 0 | 0,0 |
 | termos_encontrados | VARCHAR[] | Um ou mais dos quatro grupos | Não | 0 | 0,0 |
 | url | VARCHAR | `https://clinicaltrials.gov/study/` + `nct_id` | Não | 0 | 0,0 |
 | _gold_at | TIMESTAMP WITH TIME ZONE | Hora da gravação da gold | Não | 0 | 0,0 |
 
 #### 2.5.1 `gold.referencias`
 
-n = 33.623. Uma citação por linha.
+n = 34.257. Uma citação por linha.
 
 | Nome | Tipo | Regra |
 |---|---|---|
@@ -202,8 +202,8 @@ n = 33.623. Uma citação por linha.
 |---|---|---|
 | texto vazio | campos de texto na silver | Vira nulo |
 | `NA` e `NONE` como token | vários códigos | Permanecem. Não são apagados |
-| `phase = NA` | `phase` | Valor real: fase não se aplica. 10.035 estudos |
-| `phase` nulo | `phase` | Ausência. 839 estudos. `phases` fica `[]` |
+| `phase = NA` | `phase` | Valor real: fase não se aplica. 10.258 estudos |
+| `phase` nulo | `phase` | Ausência. 858 estudos. `phases` fica `[]` |
 | `maximum_age_years` nulo | idade | Em geral o registro não declarou teto |
 | `busca_status = sem_pmid` | referência | Citação sem artigo PubMed. Não imputar PMID |
 | `busca_status = nao_encontrado` | referência | PMID consultado e não retornado |
@@ -231,7 +231,7 @@ n = 33.623. Uma citação por linha.
 | **Destino da aplicação** | MySQL `estudos_aula`, procedure `buscar_estudos_para_aula` |
 | **Tipo de carga** | Cheia, por script local |
 | **Idempotência** | `build_gold.py` recria `gold.estudos` e `gold.referencias` e devolve os resumos PubMed já gravados. `load_mysql.py` recria as tabelas MySQL e reinsere a gold |
-| **Orquestrador** | Não há Airflow nesta versão. A execução é manual: `ingest_raw.py`, `build_silver.py`, `build_gold.py`, e `load_mysql.py` quando a aplicação precisa da cópia |
+| **Orquestrador** | `py pipeline/run.py` baixa o snapshot mais recente, refaz raw, silver e gold quando ele muda e carrega o MySQL se as variáveis `MYSQL_*` estiverem definidas |
 | **Rejeição** | A silver não descarta ensaio. O alerta vai para `silver.qualidade`. A gold exclui pelo filtro de status e de grupo, sem tabela de rejeição |
 
 ### 3.1 Regras de validação
@@ -242,7 +242,7 @@ n = 33.623. Uma citação por linha.
 | Domínio | Toda linha da gold tem `overall_status = COMPLETED` | Bloqueante. O script termina com erro se falhar |
 | Integridade | Todo `nct_id` da gold existe na silver. `termos_encontrados` tem ao menos um dos quatro grupos | Bloqueante |
 | Negócio | O grupo sai do nome ou da descrição da intervenção, não do título nem do MeSH | Filtro da gold |
-| Carga MySQL | `load_mysql.py` confere 12.158 estudos e as contagens 309, 3.848, 5.811 e 5.994 | Bloqueante se divergir |
+| Carga MySQL | `load_mysql.py` confere se o MySQL ficou igual à gold desta execução, se toda linha está `COMPLETED` e se cada estudo tem um dos quatro grupos | Bloqueante se divergir |
 | Aplicação | A IA só lê o retorno da procedure: título, resumo e link. Não escreve SQL | Guardrail da aplicação |
 
 ---
@@ -254,7 +254,7 @@ n = 33.623. Uma citação por linha.
 | Índice de busca em inglês | Prompt em português não acha "pescoço" nem "idosa" | Traduzir o tema para poucos termos clínicos em inglês antes da procedure. Manual em [manual_ia_aplicacao.md](manual_ia_aplicacao.md) |
 | Resumo `RESULT` às vezes descreve outro artigo citado no registro | A ficha pode não corresponder ao protocolo do `titulo` | Mostrar título e link juntos. Não inferir efeito que o parágrafo não traz |
 | Sem DeCS e sem PEDro | Condição em português e escore metodológico não estão na gold | Fora desta versão |
-| Snapshot AACT envelhece | Ensaios novos não aparecem até uma carga cheia | Repetir raw, silver, gold e, se a aplicação estiver no ar, `load_mysql.py` |
+| Snapshot AACT envelhece | Ensaios novos não aparecem até uma carga cheia | `py pipeline/run.py` baixa o zip mais recente e refaz a carga |
 | Mudança de schema AACT | Quebra a ingestão | Conferir o cabeçalho dos `.txt` antes de rerodar `ingest_raw.py` |
 
 ---
@@ -263,6 +263,7 @@ n = 33.623. Uma citação por linha.
 
 | Versão | Data | Autor | O que mudou |
 |---|---|---|---|
+| 1.7 | 15/10/2026 | Grupo 8 – InfiniteLoop | Contagens do snapshot `20261015`: 606.957 ensaios na raw e na silver, 12.405 na gold, 34.257 referências. A carga MySQL confere a gold desta execução |
 | 1.6 | 15/10/2026 | Grupo 8 – InfiniteLoop | Especificação alinhada à gold implementada: 12.158 estudos concluídos de pilates, fisioterapia, mobilidade e força; `gold.referencias` com resumo PubMed; cópia MySQL e procedure da IA. Substitui o ouro `trials_pilates` n = 652 |
 | 1.5 | 06/10/2026 | Grupo 8 – InfiniteLoop | Dicionário finalizado: nulos com qtd/%, fórmulas dos derivados, nulos disfarçados (`NA_EXTRA`) e decisões de tratamento da EDA |
 | 1.4 | 06/10/2026 | Grupo 8 – InfiniteLoop | Nulos e notas da EDA no ouro n=652; cinco dimensões por campo |

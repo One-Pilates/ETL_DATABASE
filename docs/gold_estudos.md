@@ -1,15 +1,15 @@
 # Tabela `gold.estudos`
 
-Uma linha por ensaio clínico concluído cuja intervenção testada é pilates, fisioterapia, mobilidade ou força. A tabela está no DuckDB `data/clinical_trials.duckdb`, schema `gold`. Hoje são **12.158** estudos.
+Uma linha por ensaio clínico concluído cuja intervenção testada é pilates, fisioterapia, mobilidade ou força. A tabela está no DuckDB `data/clinical_trials.duckdb`, schema `gold`. No snapshot de 15/10/2026 são **12.405** estudos.
 
-O estudo entra se `overall_status` é `COMPLETED` e o nome ou a descrição de alguma intervenção contém um termo de pelo menos um destes grupos. Título, resumo, MeSH e critérios de elegibilidade não decidem a entrada. Um estudo pode cair em mais de um grupo, então a soma das contagens passa de 12.158.
+O estudo entra se `overall_status` é `COMPLETED` e o nome ou a descrição de alguma intervenção contém um termo de pelo menos um destes grupos. Título, resumo, MeSH e critérios de elegibilidade não decidem a entrada. Um estudo pode cair em mais de um grupo, então a soma das contagens passa de 12.405.
 
 | Grupo | Estudos | O que a intervenção precisa mencionar |
 |---|---:|---|
-| pilates | 309 | pilates |
-| fisioterapia | 3.848 | physiotherap, physical therapy, fisioterapia |
-| mobilidade | 5.811 | mobility, mobilidade, mobilization, mobilisation, mobilização, range of motion, amplitude de movimento, stretching, alongamento, flexibility, flexibilidade, exercise therapy, therapeutic exercise, exercício terapêutico, exercicio terapeutico |
-| forca | 5.994 | strength, resistance training, weight training, weightlifting, fortalecimento, treino de força |
+| pilates | 317 | pilates |
+| fisioterapia | 3.933 | physiotherap, physical therapy, fisioterapia |
+| mobilidade | 5.939 | mobility, mobilidade, mobilization, mobilisation, mobilização, range of motion, amplitude de movimento, stretching, alongamento, flexibility, flexibilidade, exercise therapy, therapeutic exercise, exercício terapêutico, exercicio terapeutico |
+| forca | 6.139 | strength, resistance training, weight training, weightlifting, fortalecimento, treino de força |
 
 A busca ignora maiúsculas e acentos do jeito que o termo está escrito acima. `physiotherap` pega physiotherapy e physiotherapist.
 
@@ -39,8 +39,8 @@ Tipo do estudo, em maiúsculas.
 
 | Valor | Estudos |
 |---|---:|
-| INTERVENTIONAL | 11.321 |
-| OBSERVATIONAL | 837 |
+| INTERVENTIONAL | 11.549 |
+| OBSERVATIONAL | 856 |
 
 Intervencional testa uma intervenção. Observacional acompanha pessoas sem atribuir a intervenção como parte do protocolo.
 
@@ -50,13 +50,13 @@ Fase do ensaio como veio no registro, em um único texto. Estudos de exercício 
 
 | Valor | Estudos |
 |---|---:|
-| NA | 10.035 |
-| vazio | 839 |
-| PHASE1 | 350 |
-| PHASE2 | 343 |
+| NA | 10.258 |
+| vazio | 858 |
+| PHASE1 | 353 |
+| PHASE2 | 344 |
 | PHASE3 | 239 |
 | PHASE4 | 163 |
-| PHASE1/PHASE2 | 83 |
+| PHASE1/PHASE2 | 84 |
 | PHASE2/PHASE3 | 68 |
 | EARLY_PHASE1 | 38 |
 
@@ -98,9 +98,9 @@ Sexo elegível, como o registro classifica.
 
 | Valor | Estudos |
 |---|---:|
-| ALL | 10.140 |
-| FEMALE | 1.410 |
-| MALE | 602 |
+| ALL | 10.337 |
+| FEMALE | 1.444 |
+| MALE | 618 |
 | vazio | 6 |
 
 ### `conditions`
@@ -153,7 +153,7 @@ Lista de patrocinadores responsáveis pelo estudo. Colaboradores ficam de fora. 
 
 ### `were_results_reported`
 
-`true` quando o registro informa que os resultados foram publicados no ClinicalTrials.gov. `false` quando não foram. Na gold, 1.110 estudos estão com `true` e 11.048 com `false`. Isso não diz se existe artigo: a citação fica em `gold.referencias`.
+`true` quando o registro informa que os resultados foram publicados no ClinicalTrials.gov. `false` quando não foram. Na gold, 1.124 estudos estão com `true` e 11.281 com `false`. Isso não diz se existe artigo: a citação fica em `gold.referencias`.
 
 ### `termos_encontrados`
 
@@ -169,16 +169,16 @@ Data e hora em que esta versão da tabela foi gravada, com fuso horário. Não f
 
 ## `gold.referencias`
 
-Tabela irmã, no mesmo schema. Uma linha por citação dos estudos que continuam em `gold.estudos`. Hoje são **33.623** referências. A ligação é `nct_id`. Um estudo pode ter várias citações, e uma citação sem PMID também entra.
+Tabela irmã, no mesmo schema. Uma linha por citação dos estudos que continuam em `gold.estudos`. No snapshot de 15/10/2026 são **34.257** referências. A ligação é `nct_id`. Um estudo pode ter várias citações, e uma citação sem PMID também entra.
 
 | Coluna | Significado |
 |---|---|
 | `nct_id` | Estudo ao qual a citação pertence. Existe em `gold.estudos`. |
 | `pmid` | Identificador PubMed. Nulo quando a citação não tem PMID. |
-| `reference_type` | Papel da citação, em maiúsculas. Na carga atual: `BACKGROUND` (23.922), `DERIVED` (5.203) e `RESULT` (4.498). `RESULT` é o artigo de resultado do ensaio. |
+| `reference_type` | Papel da citação, em maiúsculas. Na carga atual: `BACKGROUND` (24.401), `DERIVED` (5.267) e `RESULT` (4.589). `RESULT` é o artigo de resultado do ensaio. |
 | `citation` | Citação bibliográfica como está no arquivo de referências do ClinicalTrials.gov. |
 | `titulo` | Título do artigo na PubMed. Preenchido quando a busca deu certo. |
 | `periodico` | Periódico do artigo. |
 | `ano` | Ano de publicação. Número inteiro. |
 | `resumo` | Resumo do artigo (abstract). Não inclui o texto completo. |
-| `busca_status` | O que aconteceu na busca do resumo: `ok` (30.965), `sem_pmid` (2.606) ou `nao_encontrado` (52). |
+| `busca_status` | O que aconteceu na busca do resumo: `ok` (31.566), `sem_pmid` (2.638) ou `nao_encontrado` (53). |

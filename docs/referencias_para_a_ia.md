@@ -20,7 +20,7 @@ Cada linha tem três campos:
 
 A ordem junta o quanto o tema aparece no título, nas condições, no MeSH e no nome da intervenção, a existência de um artigo com resumo, e a data de conclusão, da mais recente para a mais antiga.
 
-`BACKGROUND` e `DERIVED` não ocupam o lugar do artigo de resultado enquanto existir um `RESULT` com resumo. `gold.referencias` tem 33.623 citações ligadas aos 12.158 estudos da gold. A resposta mostra no máximo cinco, ou dez se o limite for pedido. O teto é 10.
+`BACKGROUND` e `DERIVED` não ocupam o lugar do artigo de resultado enquanto existir um `RESULT` com resumo. No snapshot de 15/10/2026, `gold.referencias` tem 34.257 citações ligadas aos 12.405 estudos da gold. A resposta mostra no máximo cinco, ou dez se o limite for pedido. O teto é 10.
 
 ## O que o resumo faz na aula
 

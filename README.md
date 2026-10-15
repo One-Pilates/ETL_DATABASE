@@ -1,6 +1,6 @@
 # OnePilates — base de ensaios clínicos
 
-Pipeline medalhão da base AACT/ClinicalTrials.gov para o projeto OnePilates (Grupo 8 — InfiniteLoop). A gold reúne 12.158 ensaios concluídos de pilates, fisioterapia, mobilidade e força, com resumos da PubMed. Uma cópia MySQL serve a IA que indica estudos ao professor na hora de montar a aula.
+Pipeline medalhão da base AACT/ClinicalTrials.gov para o projeto OnePilates (Grupo 8 — InfiniteLoop). No snapshot de 15/10/2026 a gold reúne 12.405 ensaios concluídos de pilates, fisioterapia, mobilidade e força, com resumos da PubMed. Uma cópia MySQL serve a IA que indica estudos ao professor na hora de montar a aula.
 
 O grão é o ensaio (`nct_id`), não o aluno e não a prescrição da aula.
 
@@ -8,15 +8,15 @@ O grão é o ensaio (`nct_id`), não o aluno e não a prescrição da aula.
 
 | Camada | Onde | O que guarda |
 |---|---|---|
-| Raw | `raw.estudos` | 602.514 ensaios, texto como veio do dump |
-| Silver | `silver.estudos` | Os mesmos 602.514, tipados. Alertas em `silver.qualidade` |
-| Gold | `gold.estudos` | 12.158 concluídos dos quatro grupos |
-| Gold | `gold.referencias` | 33.623 citações, com resumo PubMed quando a busca deu certo |
+| Raw | `raw.estudos` | 606.957 ensaios, texto como veio do dump |
+| Silver | `silver.estudos` | Os mesmos 606.957, tipados. Alertas em `silver.qualidade` |
+| Gold | `gold.estudos` | 12.405 concluídos dos quatro grupos |
+| Gold | `gold.referencias` | 34.257 citações, com resumo PubMed quando a busca deu certo |
 | Aplicação | MySQL `estudos_aula` | Cópia consultável e a procedure `buscar_estudos_para_aula` |
 
 O DuckDB fica em `data/clinical_trials.duckdb` e os txt de origem em `base_dados/`. Essas pastas não vêm no clone: o comando abaixo baixa o snapshot e gera a gold de novo. Um snapshot novo muda as contagens.
 
-Um estudo entra na gold quando está `COMPLETED` e o nome ou a descrição de alguma intervenção contém termo de pilates, fisioterapia, mobilidade ou força. No snapshot usado para escrever este texto as contagens eram 309, 3.848, 5.811 e 5.994. A soma passa do total de estudos porque um ensaio pode cair em mais de um grupo.
+Um estudo entra na gold quando está `COMPLETED` e o nome ou a descrição de alguma intervenção contém termo de pilates, fisioterapia, mobilidade ou força. No snapshot de 15/10/2026 as contagens são 317, 3.933, 5.939 e 6.139. A soma passa de 12.405 porque um ensaio pode cair em mais de um grupo.
 
 ## Como rodar
 

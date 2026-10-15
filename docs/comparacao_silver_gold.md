@@ -1,6 +1,6 @@
 # Da silver para a gold
 
-`silver.estudos` guarda os 602.514 ensaios do ClinicalTrials.gov, com 133 colunas já tipadas. `gold.estudos` fica com 12.158 desses ensaios e 24 colunas. O recorte está no `SELECT` de [pipeline/build_gold.py](../pipeline/build_gold.py). O significado de cada coluna da gold está em [gold_estudos.md](gold_estudos.md).
+`silver.estudos` guarda os 606.957 ensaios do snapshot AACT de 15/10/2026, com 133 colunas já tipadas. `gold.estudos` fica com 12.405 desses ensaios e 24 colunas. O recorte está no `SELECT` de [pipeline/build_gold.py](../pipeline/build_gold.py). O significado de cada coluna da gold está em [gold_estudos.md](gold_estudos.md).
 
 A gold não reescreve o que copia. As 21 colunas em comum têm o mesmo tipo e o mesmo valor que na silver, na linha do mesmo `nct_id`. O que muda é quem entra, quais colunas viajam e três campos que só existem na gold.
 
@@ -15,12 +15,12 @@ Título, resumo, MeSH e critérios de elegibilidade não decidem a entrada. Um e
 
 | Grupo | Estudos na gold |
 |---|---:|
-| pilates | 309 |
-| fisioterapia | 3.848 |
-| mobilidade | 5.811 |
-| forca | 5.994 |
+| pilates | 317 |
+| fisioterapia | 3.933 |
+| mobilidade | 5.939 |
+| forca | 6.139 |
 
-A soma passa de 12.158 por causa dessa sobreposição.
+A soma passa de 12.405 por causa dessa sobreposição.
 
 ## Colunas copiadas
 
@@ -62,7 +62,7 @@ Estas 21 colunas saem de `silver.estudos` e entram em `gold.estudos` sem convers
 
 ## Colunas que ficam só na silver
 
-São 112. A gold não as apaga da silver. Elas continuam em `silver.estudos` para os 602.514 estudos.
+São 112. A gold não as apaga da silver. Elas continuam em `silver.estudos` para os 606.957 estudos.
 
 ### Datas administrativas
 
@@ -110,4 +110,4 @@ A gold fica com `minimum_age_years` e `maximum_age_years`, que a silver já tinh
 
 ## Tabela nova
 
-`gold.referencias` não existe na silver. Ela junta as citações de `study_references.txt` aos `nct_id` que permaneceram na gold. São 33.623 linhas, com `nct_id`, `pmid`, `reference_type`, `citation`, `titulo`, `periodico`, `ano`, `resumo` e `busca_status`.
+`gold.referencias` não existe na silver. Ela junta as citações de `study_references.txt` aos `nct_id` que permaneceram na gold. São 34.257 linhas, com `nct_id`, `pmid`, `reference_type`, `citation`, `titulo`, `periodico`, `ano`, `resumo` e `busca_status`.

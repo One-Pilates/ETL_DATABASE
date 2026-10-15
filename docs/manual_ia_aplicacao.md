@@ -9,8 +9,8 @@ A carga fica no DuckDB `data/clinical_trials.duckdb` e a cópia de consulta fica
 | Etapa | Script | Resultado |
 |---|---|---|
 | Raw | `pipeline/ingest_raw.py` | `raw.estudos`, um ensaio por `nct_id`. Recria o arquivo do banco. Não rode de novo se a gold precisa ser preservada. |
-| Silver | `pipeline/build_silver.py` | `silver.estudos`, 602.514 ensaios tipados. Não apaga linhas. |
-| Gold | `pipeline/build_gold.py` | `gold.estudos`, 12.158 ensaios concluídos de pilates, fisioterapia, mobilidade ou força. Copia os resumos PubMed já gravados. |
+| Silver | `pipeline/build_silver.py` | `silver.estudos`, 606.957 ensaios tipados no snapshot de 15/10/2026. Não apaga linhas. |
+| Gold | `pipeline/build_gold.py` | `gold.estudos`, 12.405 ensaios concluídos de pilates, fisioterapia, mobilidade ou força. Copia os resumos PubMed já gravados. |
 | PubMed | `pipeline/fetch_pubmed.py` | Preenche título, periódico, ano e resumo em `gold.referencias`. Já foi executado. Não rode de novo se esses campos estão preenchidos. |
 | MySQL | `pipeline/load_mysql.py` | Copia a gold para as tabelas `estudo`, `estudo_grupo`, `estudo_condicao`, `estudo_intervencao`, `estudo_mesh` e `referencia`, e cria a procedure. |
 
